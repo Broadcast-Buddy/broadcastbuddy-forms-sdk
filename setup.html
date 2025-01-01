@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Broadcast Buddy Add-on Setup</title>
+  <base target="_top">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      background-color: #3cb36f;
+      width: 100%;
+      padding: 10px 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    header img {
+      height: 40px;
+      margin-right: 10px;
+    }
+
+    header h5 {
+      color: white;
+      margin: 0;
+    }
+
+    main {
+      width: 90%;
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #3cb36f;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #3cb36f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    button:hover {
+      background-color: #34a163;
+    }
+  </style>
+  <script>
+    function saveSMSSettings() {
+      const smsApiToken = document.getElementById('smsApiToken').value;
+      const smsSenderID = document.getElementById('smsSenderID').value;
+      google.script.run.setProperty('smsApiToken',smsApiToken);
+      google.script.run.setProperty('smsSenderID',smsSenderID);
+      alert('SMS settings saved!')
+    }
+
+    function saveEmailSettings() {
+      const emailApiToken = document.getElementById('emailApiToken').value;
+      google.script.run.setProperty('emailApiToken',emailApiToken);
+      const subject = document.getElementById('subject').value;
+      google.script.run.setProperty('subject',subject);
+      alert('Email settings saved!');
+    }
+
+    function saveWhatsAppSettings() {
+      const whatsappApiToken = document.getElementById('whatsappApiToken').value;
+      google.script.run.setProperty('whatsappApiToken',whatsappApiToken);
+      alert('WhatsApp settings saved!');
+    }
+
+    function saveFieldSettings(){
+      const contactField = document.getElementById('contactField').value;
+      const emailField = document.getElementById('emailField').value;
+      google.script.run.setProperty('contactField',contactField);
+      google.script.run.setProperty('emailField',emailField);
+      alert('Field settings saved!')
+    }
+
+    function saveMessageSettings() {
+      const messageField = document.getElementById('messageField').value;
+      google.script.run.setProperty('messageField',messageField);
+      alert('Message saved!');
+    }
+    
+    // Fields
+    google.script.run.getFields();
+  </script>
+</head>
+
+<body>
+  <header>
+    <img src="https://broadcastbuddy.app/assets/icons/favicon.ico" alt="Broadcast Buddy Logo">
+    <h5>Broadcast Buddy Add-on Setup</h5>
+  </header>
+
+  <main>
+    <h2>Configure SMS</h2>
+    <form onsubmit="saveSMSSettings(); return false;">
+      <label for="smsApiToken">SMS API Token:</label>
+      <input type="text" value="<?!= PropertiesService.getScriptProperties().getProperty('smsApiToken'); ?>" id="smsApiToken" name="smsApiToken" placeholder="Enter SMS API Token" required>
+      <label for="smsSenderID">Sender ID:</label>
+      <input type="text" value="<?!= PropertiesService.getScriptProperties().getProperty('smsSenderID'); ?>" id="smsSenderID" name="smsSenderID" placeholder="Enter Sender ID" required>
+      <button type="submit">Save SMS Settings</button>
+    </form>
+
+    <h2>Configure Email</h2>
+    <form onsubmit="saveEmailSettings(); return false;">
+      <label for="emailApiToken">Email API Token:</label>
+      <input type="text" value="<?!= PropertiesService.getScriptProperties().getProperty('emailApiToken'); ?>" id="emailApiToken" name="emailApiToken" placeholder="Enter Email API Token" required>
+      <label for="subject">Email Subject:</label>
+      <input type="text" value="<?!= PropertiesService.getScriptProperties().getProperty('subject'); ?>" id="subject" name="subject" placeholder="Enter Email Subject" required>
+      <button type="submit">Save Email Settings</button>
+    </form>
+
+    <h2>Configure WhatsApp</h2>
+    <form onsubmit="saveWhatsAppSettings(); return false;">
+      <label for="whatsappApiToken">WhatsApp API Token:</label>
+      <input type="text" value="<?!= PropertiesService.getScriptProperties().getProperty('whatsappApiToken'); ?>" id="whatsappApiToken" name="whatsappApiToken" placeholder="Enter WhatsApp API Token" required>
+      <button type="submit">Save WhatsApp Settings</button>
+    </form>
+
+    <h2>Configure Fields</h2>
+    <form onsubmit="saveFieldSettings(); return false;">
+      <label for="contactField">Phone Number Field:</label>
+      <select name="contactField" id="contactField" required>
+      </select>
+      <label for="emailField">Email Field:</label>
+      <select name="emailField" id="emailField" required>
+      </select>
+      <button type="submit">Save Field Settings</button>
+    </form>
+
+    <h2>Configure Message</h2>
+    <form onsubmit="saveMessageSettings(); return false;">
+      <label for="messageField">Message:</label>
+      <textarea name="messageField" id="messageField" required><?!= PropertiesService.getScriptProperties().getProperty('messageField'); ?></textarea>
+      <button type="submit">Save Message</button>
+    </form>
+  </main>
+
+  <script>
+    const fields = JSON.parse(`<?!= PropertiesService.getScriptProperties().getProperty('fields'); ?>`);
+    for (let i = 0; i < fields.length; i++) {
+      let field = fields[i];
+      let selectElements = document.getElementsByTagName('select'); // Get all <select> elements
+      
+      // Loop through each select element
+      for (let selectElement of selectElements) {
+        if (selectElement) {
+          let option = document.createElement('option'); // Create a new option element
+          option.value = field.index; // Set the value of the option
+          option.textContent = field.title; // Set the display text of the option
+          selectElement.appendChild(option); // Append the option to the select element
+        }
+      }
+    }
+
+    function setSelectedOption(selectElement, value) {
+      if (selectElement && selectElement.tagName === 'SELECT') {
+        for (let option of selectElement.options) {
+          if (option.value === value) {
+            option.selected = true; // Set the option as selected
+            break;
+          }
+        }
+      }
+    }
+
+    let firstSelect = document.getElementsByTagName('select')[0];
+    let secondSelect = document.getElementsByTagName('select')[1];
+    setSelectedOption(firstSelect, `<?!= PropertiesService.getScriptProperties().getProperty('contactField'); ?>`);
+    setSelectedOption(secondSelect, `<?!= PropertiesService.getScriptProperties().getProperty('emailField'); ?>`);
+  </script>
+</body>
+
+</html>
